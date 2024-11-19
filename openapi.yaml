@@ -159,7 +159,7 @@ paths:
                     #### property information overrides (optional)
                       - `unit_count`: The number of units in the property
                       - `avg_sqft`: The average sqft of the property
-                      - `year_build`: The year of construction of the property
+                      - `year_built`: The year of construction of the property
                       - `property_class`: The class of the property
                       - `property_style`: The style of the property
                       - `property_type`: The type of the property
@@ -192,7 +192,7 @@ paths:
                             "property_style": "Garden/Low Rise",
                             "property_type": "Apartment",
                             "unit_count": 240,
-                            "year_build": 2003,
+                            "year_built": 2003,
                             "client_identifier": "1"
                           }
                         ]
@@ -211,7 +211,7 @@ paths:
                             "property_style": "Garden/Low Rise",
                             "property_type": "Apartment",
                             "unit_count": 240,
-                            "year_build": 2003,
+                            "year_built": 2003,
                             "client_identifier": "1" 
                           },
                         {
@@ -225,7 +225,7 @@ paths:
                             "property_style": "Garden/Low Rise",
                             "property_type": "Apartment",
                             "unit_count": 240,
-                            "year_build": 2003,
+                            "year_built": 2003,
                             "client_identifier": "1" 
                           }
                         ]
@@ -321,7 +321,7 @@ paths:
                               "property_style": "Garden/Low Rise",
                               "property_type": "Apartment",
                               "unit_count": 240,
-                              "year_build": 2003,
+                              "year_built": 2003,
                               "client_identifier": "1"
                           },
                           {
@@ -341,7 +341,7 @@ paths:
                               "property_style": "Garden/Low Rise",
                               "property_type": "Apartment",
                               "unit_count": 240,
-                              "year_build": 2003,
+                              "year_built": 2003,
                               "client_identifier": "1"
                           }
                       ]
