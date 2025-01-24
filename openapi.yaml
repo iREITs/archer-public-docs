@@ -15,7 +15,7 @@ components:
 security:
   - tokenAuth: []
 paths:
-  /getRRParse:
+  /api/getRRParse:
     post:
       summary: Parse a rent roll file
       description: Parses a provided rent roll Excel file and returns the parsed data.
