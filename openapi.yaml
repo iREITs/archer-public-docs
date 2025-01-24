@@ -15,6 +15,506 @@ components:
 security:
   - tokenAuth: []
 paths:
+  /getRRParse:
+    post:
+      summary: Parse a rent roll file
+      description: Parses a provided rent roll Excel file and returns the parsed data.
+      parameters:
+        - name: api_key
+          in: header
+          required: true
+          description: API key for authentication.
+          schema:
+            type: string
+        - name: address
+          in: query
+          required: true
+          description: The address of the property.
+          schema:
+            type: string
+        - name: city
+          in: query
+          required: true
+          description: The city where the property is located.
+          schema:
+            type: string
+        - name: state
+          in: query
+          required: true
+          description: The state where the property is located.
+          schema:
+            type: string
+        - name: zip
+          in: query
+          required: true
+          description: The ZIP code of the property.
+          schema:
+            type: string
+        - name: as_of_date
+          in: query
+          required: true
+          description: The date as of which the data is relevant (in MM/DD/YYYY format).
+          schema:
+            type: string
+            format: date
+        - name: addin_version
+          in: query
+          required: false
+          description: The version of the add-in being used.
+          schema:
+            type: string
+        - name: platform
+          in: query
+          required: false
+          description: The platform of the add-in (e.g., WINDOWS, MAC, WEB).
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                rr_file:
+                  type: string
+                  format: binary
+                  description: The rent roll Excel file to parse.
+      responses:
+        '200':
+          description: Successfully parsed the rent roll file.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: The status of the operation.
+                    example: success
+                  data:
+                    type: object
+                    description: The parsed data.
+                    properties:
+                      propertyInfo:
+                        type: object
+                        description: Static list of keys describing the property.
+                        example:
+                          {
+                              "archer_property_id": 73694,
+                              "property_name": "ZZ Bella Vista Apartments",
+                              "full_ddress": "1500 VISTA CLUB CIR, SANTA CLARA, CA 95054",
+                              "property_class": "B",
+                              "unit_count": "100",
+                              "avg_sqft": "826",
+                              "year_built": "1991",
+                              "renovation_last_known": "2009",
+                              "property_style": null,
+                              "property_type": "Apartment",
+                              "low_income_limit_4_people": null,
+                              "hera_limit_4_people": null,
+                              "fmr_0": "2383",
+                              "fmr_1": "2694",
+                              "fmr_2": "3132",
+                              "fmr_3": "4011",
+                              "fmr_4": "4425",
+                              "fmr_5": null,
+                              "is_usda_loan_eligible": false,
+                              "as_of_date": "2023-02-24 00:00:00"
+                          }
+                        properties:
+                          propertyName:
+                            type: string
+                            description: The name of the property.
+                          propertyType:
+                            type: string
+                            description: The type of the property (e.g., residential, commercial).
+                          numberOfUnits:
+                            type: integer
+                            description: The number of units in the property.
+                          yearBuilt:
+                            type: integer
+                            description: The year the property was built.
+                      rentRollMetadata:
+                        type: array
+                        description: Rentroll metadata info.
+                        items:
+                          type: object
+                          description: Keys of all array objects are the same and derived from the provided file headers.
+                          example:
+                             {
+                                  "title": "Deposit On Hand",
+                                  "title_1": "Deposit On",
+                                  "title_2": "Hand",
+                                  "grouping": "Deposit on Hand",
+                                  "format": "1",
+                                  "right_left": "R"
+                              }
+                          properties:
+                            title:
+                              type: string
+                              description: Title of the header.
+                            title_1:
+                              type: string
+                              description: First row of the header.
+                            title_2:
+                              type: string
+                              description: Second row wrap content of the header.
+                            grouping:
+                              type: string
+                              description: Grouping of the header.
+                            format:
+                              type: string
+                              description: Format of the header.
+                            right_left:
+                              type: string
+                              description: Right or Left alignment of the header.
+                      clientFloorPlans:
+                        type: array
+                        example:
+                          [
+                          {
+                              "clientId": 1,
+                              "origFloorPlan": "1/1",
+                              "floorPlanOverriden": "1x1"
+                          },{
+                              "clientId": 1,
+                              "origFloorPlan": "1x0",
+                              "floorPlanOverriden": "b1"
+                          }
+                          ,
+                          {
+                              "clientId": 1,
+                              "origFloorPlan": "2x0",
+                              "floorPlanOverriden": "b2"
+                          }]
+                        items:
+                          type: object
+                          description: Client floor plans data
+                          example:
+                            {
+                                "clientId": 1,
+                                "origFloorPlan": "1/1",
+                                "floorPlanOverriden": "1x1"
+                            }
+                          properties:
+                            clientId:
+                              type: integer
+                              description: The id of the client.
+                            origFloorPlan:
+                              type: string
+                              description: The original floor plan.
+                            floorPlanOverriden:
+                              type: string
+                              description: The floor plan override.
+                      rrParsingScore:
+                        type: object
+                        example:
+                          {
+                            "id": 4954,
+                            "client_property_file_id": 19892,
+                            "client_api_usage_id": 37495,
+                            "scoring_version": 1,
+                            "created_at": 1737726612514,
+                            "total_units": 261,
+                            "is_pdf": false,
+                            "occupied_units": 238,
+                            "has_floor_plan_percentage": 100.0,
+                            "has_apt_number_percentage": 100.0,
+                            "has_lease_rent_percentage": 100.0,
+                            "has_at_least_one_date": 100.0,
+                            "has_in_date": 100.0,
+                            "has_out_date": 100.0,
+                            "totals_match_percentage": 80.25210084033614,
+                            "invalid_fee_percentage": 0.0,
+                            "unit_confidence_score": 87.51,
+                            "unit_abnormality": 0,
+                            "overall_score": 95.394585,
+                            "number_of_headers": 13
+                         }
+                        properties:
+                          id:
+                            type: integer
+                            description: The id of the rent roll parsing score.
+                          client_property_file_id:
+                            type: integer
+                            description: The id of the client property file.
+                          client_api_usage_id:
+                            type: integer
+                            description: The id of the client API usage.
+                          scoring_version:
+                            type: integer
+                            description: The version of the scoring algorithm.
+                          created_at:
+                            type: integer
+                            description: The timestamp when the rent roll parsing score was created.
+                          total_units:
+                            type: integer
+                            description: The total number of units in the property.
+                          is_pdf:
+                            type: boolean
+                            description: Whether the file is a PDF.
+                          occupied_units:
+                            type: integer
+                            description: The number of occupied units in the property.
+                          has_floor_plan_percentage:
+                            type: number
+                            description: The percentage of units with floor plans.
+                          has_apt_number_percentage:
+                            type: number
+                            description: The percentage of units with apartment numbers.
+                          has_lease_rent_percentage:
+                            type: number
+                            description: The percentage of units with lease rents.
+                          has_at_least_one_date:
+                            type: number
+                            description: The percentage of units with at least one date.
+                          has_in_date:
+                            type: number
+                            description: The percentage of units with in dates.
+                          has_out_date:
+                            type: number
+                            description: The percentage of units with out dates.
+                          totals_match_percentage:
+                            type: number
+                            description: The percentage of units with matching totals.
+                          invalid_fee_percentage:
+                            type: number
+                            description: The percentage of units with invalid fees.
+                          unit_confidence_score:
+                            type: number
+                            description: The confidence score for each unit.
+                          unit_abnormality:
+                            type: integer
+                            description: The number of units with abnormality.
+                          overall_score:
+                            type: number
+                            description: The overall score for the rent roll parsing.
+                          number_of_headers:
+                            type: integer
+                            description: The number of headers in the rent roll file.
+                      rentRoll:
+                        type: array
+                        items:
+                          type: object
+                        description: >
+                            ## Rentroll data
+                            
+                            ### Json arrangement
+
+                            - Keys of all array objects are same and they are header from the given file. Slightly modified than original and ordered by Archer 
+                            
+                            - First element in the array is archer standardized headers
+                            
+                            - Second element is fuzzy match percentage of the given header. zero means no fuzzy match involved. Higher the number, better the confidence score is.
+                            
+                            - Third element to Nth elements are representing rentroll records
+                        example:
+                            [
+                                    {
+                                        "UNIT": "Unit No.",
+                                        "TYPE (est)": "Unit Type",
+                                        "archer_bed": "Bed",
+                                        "archer_bath": "Bath",
+                                        "SQ. FEET": "Sqft",
+                                        "lease_type": "Lease Type",
+                                        "renovation_status": "Renovation Status",
+                                        "WASHER / DRYER CONNECTIONS - AMOUNT (est)": "In-Unit W/D",
+                                        "WASHER / DRYER IN UNIT - AMOUNT (est)": "In-Unit W/D",
+                                        "WASHER DRYER RENTAL - AMOUNT (est)": "In-Unit W/D",
+                                        "archer_occupancy_status": "Occupancy Status",
+                                        "STATUS": "Occupancy Status",
+                                        "RESIDENTS": "Name",
+                                        "LEASE START": "Lease Start Date",
+                                        "MOVE IN": "Lease Start Date",
+                                        "LEASE END": "Lease End Date",
+                                        "archer_lease_term": "Lease Term (months)",
+                                        "MOVE OUT": "Move Out Date",
+                                        "archer_mtm": "MTM",
+                                        "DEPOSITS": "Deposit On Hand",
+                                        "BALANCE": "Balance",
+                                        "MARKET RENT": "Market Rent",
+                                        "TOTAL - AMOUNT": "Total Billing",
+                                        "RENT - AMOUNT": "Lease Rent",
+                                        "VIP PARKING SPOT VIP SPOT #1 - AMOUNT": "Parking Fee",
+                                        "RESIDENT LEASE RENT - AMOUNT": "Lease Rent",
+                                        "MONTHLY PET FEE - AMOUNT": "Pet Fee",
+                                        "CREDIT BUILDER - AMOUNT": "Other Fee",
+                                        "MONTH TO MONTH FEE - AMOUNT": "Month to Month",
+                                        "RENTERS LEGAL LIABILITY - AMOUNT": "Insurance Fee",
+                                        "EMPLOYEE UNIT RENT ALLOWANCE - AMOUNT": "Employee Discount",
+                                        "WASHER DRYER RENTAL - AMOUNT": "Washer-Dryer Fee",
+                                        "WASHER / DRYER IN UNIT - AMOUNT": "Washer-Dryer Fee",
+                                        "WASHER / DRYER CONNECTIONS - AMOUNT": "Washer-Dryer Fee",
+                                        "RESERVED PARKING#43 - AMOUNT": "Parking Fee",
+                                        "CONCESSION - RENT-CONCESSION - RENT- JANUARY ONLY - AMOUNT": "Concession One-Time",
+                                        "SUBSIDY/HARRIS COUNTY HOUSING AUTHORITY - AMOUNT": "Rent Assistance",
+                                        "CONCESSION - RENT- JANUARY ONLY - AMOUNT": "Concession One-Time"
+                                    },
+                                    {
+                                        "UNIT": null,
+                                        "TYPE (est)": null,
+                                        "archer_bed": null,
+                                        "archer_bath": null,
+                                        "SQ. FEET": null,
+                                        "lease_type": null,
+                                        "renovation_status": null,
+                                        "WASHER / DRYER CONNECTIONS - AMOUNT (est)": null,
+                                        "WASHER / DRYER IN UNIT - AMOUNT (est)": null,
+                                        "WASHER DRYER RENTAL - AMOUNT (est)": null,
+                                        "archer_occupancy_status": null,
+                                        "STATUS": null,
+                                        "RESIDENTS": null,
+                                        "LEASE START": null,
+                                        "MOVE IN": null,
+                                        "LEASE END": null,
+                                        "archer_lease_term": null,
+                                        "MOVE OUT": null,
+                                        "archer_mtm": null,
+                                        "DEPOSITS": null,
+                                        "BALANCE": null,
+                                        "MARKET RENT": null,
+                                        "TOTAL - AMOUNT": null,
+                                        "RENT - AMOUNT": null,
+                                        "VIP PARKING SPOT VIP SPOT #1 - AMOUNT": null,
+                                        "RESIDENT LEASE RENT - AMOUNT": null,
+                                        "MONTHLY PET FEE - AMOUNT": null,
+                                        "CREDIT BUILDER - AMOUNT": null,
+                                        "MONTH TO MONTH FEE - AMOUNT": null,
+                                        "RENTERS LEGAL LIABILITY - AMOUNT": null,
+                                        "EMPLOYEE UNIT RENT ALLOWANCE - AMOUNT": null,
+                                        "WASHER DRYER RENTAL - AMOUNT": null,
+                                        "WASHER / DRYER IN UNIT - AMOUNT": null,
+                                        "WASHER / DRYER CONNECTIONS - AMOUNT": null,
+                                        "RESERVED PARKING#43 - AMOUNT": null,
+                                        "CONCESSION - RENT-CONCESSION - RENT- JANUARY ONLY - AMOUNT": null,
+                                        "SUBSIDY/HARRIS COUNTY HOUSING AUTHORITY - AMOUNT": null,
+                                        "CONCESSION - RENT- JANUARY ONLY - AMOUNT": null
+                                    },
+                                    {
+                                        "UNIT": "1000",
+                                        "TYPE (est)": "c_2x1.0",
+                                        "archer_bed": "2",
+                                        "archer_bath": "1",
+                                        "SQ. FEET": "1020.0",
+                                        "lease_type": null,
+                                        "renovation_status": null,
+                                        "WASHER / DRYER CONNECTIONS - AMOUNT (est)": null,
+                                        "WASHER / DRYER IN UNIT - AMOUNT (est)": "true",
+                                        "WASHER DRYER RENTAL - AMOUNT (est)": null,
+                                        "archer_occupancy_status": "Occupied",
+                                        "STATUS": "C",
+                                        "RESIDENTS": "Allen Green, Naomi Ondiba",
+                                        "LEASE START": "2022-02-21",
+                                        "MOVE IN": "2022-02-23",
+                                        "LEASE END": "2023-02-13",
+                                        "archer_lease_term": "11",
+                                        "MOVE OUT": null,
+                                        "archer_mtm": null,
+                                        "DEPOSITS": "0.0",
+                                        "BALANCE": "0.0",
+                                        "MARKET RENT": "1197.0",
+                                        "TOTAL - AMOUNT": "1235.99",
+                                        "RENT - AMOUNT": "1165.0",
+                                        "VIP PARKING SPOT VIP SPOT #1 - AMOUNT": "30.0",
+                                        "RESIDENT LEASE RENT - AMOUNT": null,
+                                        "MONTHLY PET FEE - AMOUNT": null,
+                                        "CREDIT BUILDER - AMOUNT": "5.99",
+                                        "MONTH TO MONTH FEE - AMOUNT": null,
+                                        "RENTERS LEGAL LIABILITY - AMOUNT": null,
+                                        "EMPLOYEE UNIT RENT ALLOWANCE - AMOUNT": null,
+                                        "WASHER DRYER RENTAL - AMOUNT": null,
+                                        "WASHER / DRYER IN UNIT - AMOUNT": "35.0",
+                                        "WASHER / DRYER CONNECTIONS - AMOUNT": null,
+                                        "RESERVED PARKING#43 - AMOUNT": null,
+                                        "CONCESSION - RENT-CONCESSION - RENT- JANUARY ONLY - AMOUNT": null,
+                                        "SUBSIDY/HARRIS COUNTY HOUSING AUTHORITY - AMOUNT": null,
+                                        "CONCESSION - RENT- JANUARY ONLY - AMOUNT": null
+                                    },
+                                    {
+                                        "UNIT": "1001",
+                                        "TYPE (est)": "g_2x2",
+                                        "archer_bed": "2",
+                                        "archer_bath": "2",
+                                        "SQ. FEET": "1105.0",
+                                        "lease_type": null,
+                                        "renovation_status": null,
+                                        "WASHER / DRYER CONNECTIONS - AMOUNT (est)": null,
+                                        "WASHER / DRYER IN UNIT - AMOUNT (est)": null,
+                                        "WASHER DRYER RENTAL - AMOUNT (est)": null,
+                                        "archer_occupancy_status": "Occupied",
+                                        "STATUS": "C",
+                                        "RESIDENTS": "Jose Mejia",
+                                        "LEASE START": "2022-08-05",
+                                        "MOVE IN": "2022-08-05",
+                                        "LEASE END": "2023-08-07",
+                                        "archer_lease_term": "12",
+                                        "MOVE OUT": null,
+                                        "archer_mtm": null,
+                                        "DEPOSITS": "0.0",
+                                        "BALANCE": "0.0",
+                                        "MARKET RENT": "1249.0",
+                                        "TOTAL - AMOUNT": "980.0",
+                                        "RENT - AMOUNT": "1225.0",
+                                        "VIP PARKING SPOT VIP SPOT #1 - AMOUNT": null,
+                                        "RESIDENT LEASE RENT - AMOUNT": null,
+                                        "MONTHLY PET FEE - AMOUNT": null,
+                                        "CREDIT BUILDER - AMOUNT": null,
+                                        "MONTH TO MONTH FEE - AMOUNT": null,
+                                        "RENTERS LEGAL LIABILITY - AMOUNT": null,
+                                        "EMPLOYEE UNIT RENT ALLOWANCE - AMOUNT": "-245.0",
+                                        "WASHER DRYER RENTAL - AMOUNT": null,
+                                        "WASHER / DRYER IN UNIT - AMOUNT": null,
+                                        "WASHER / DRYER CONNECTIONS - AMOUNT": null,
+                                        "RESERVED PARKING#43 - AMOUNT": null,
+                                        "CONCESSION - RENT-CONCESSION - RENT- JANUARY ONLY - AMOUNT": null,
+                                        "SUBSIDY/HARRIS COUNTY HOUSING AUTHORITY - AMOUNT": null,
+                                        "CONCESSION - RENT- JANUARY ONLY - AMOUNT": null
+                                    }
+                                ]
+                          
+        '400':
+          description: Bad Request - Missing or invalid parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Error status.
+                    example: error
+                  message:
+                    type: string
+                    description: Detailed error message.
+        '401':
+          description: Unauthorized - Invalid API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Error status.
+                    example: error
+                  message:
+                    type: string
+                    description: Error message.
+        '500':
+          description: Internal Server Error - An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Error status.
+                    example: error
+                  message:
+                    type: string
+                    description: Error message.
   /api/v1/underwrites/bulk_run:
     post:
       summary: Run Bulk underwrite
