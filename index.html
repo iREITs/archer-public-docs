@@ -5,10 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Archer Developer Documentation</title>
   <meta name="description" content="Archer API reference and MCP connector documentation." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%233ee6b0%27/%3E%3C/svg%3E" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="alternate icon" href="./favicon-32.png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css" />
   <style>
-    :root { --accent:#0f9d76; }
+    :root { --accent:#0f9d76; color-scheme: light; }
+    body { background:#fff; color:#2c3e50; }
     .sidebar { border-right:1px solid #e6ecea; }
     .sidebar-nav li > p { font-weight:700; font-size:.78rem; letter-spacing:.06em; text-transform:uppercase; color:#8a9a95; margin:1.4em 0 .4em; }
     .app-name-link { font-weight:700 !important; letter-spacing:-.01em; }
@@ -22,14 +25,6 @@
     .card:hover { border-color:var(--accent); transform:translateY(-2px); }
     .card b { display:block; color:#12201c; font-size:1.02rem; margin-bottom:.3em; }
     .card span { color:#5b6b66; font-size:.9rem; line-height:1.5; display:block; }
-    @media (prefers-color-scheme: dark) {
-      body, .markdown-section { background:#0f1512; color:#e6ece9; }
-      .sidebar { background:#0f1512; border-right-color:#27332f; }
-      .markdown-section h1,.markdown-section h2,.markdown-section h3,.card b { color:#e6ece9; }
-      .markdown-section tr:nth-child(2n) { background:#141b18; }
-      .card { border-color:#27332f; }
-      .markdown-section pre, .markdown-section code { background:#18201d !important; color:#e6ece9; }
-    }
   </style>
 </head>
 <body>
