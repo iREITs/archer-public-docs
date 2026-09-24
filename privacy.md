@@ -85,7 +85,7 @@ environment as the rest of the Archer platform.
 ## Contact
 
 Questions about this policy, or about data handled by the connector:
-[privacy@archer.re](mailto:privacy@archer.re).
+[support@archer.re](mailto:support@archer.re).
 
 ---
 
